@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(title='Mesas')"></head>
+<body>
+<div class="container">
+    <h2>Mesas</h2>
+    <a class="btn btn-success mb-3" th:href="@{/mesa/novo}">Nova Mesa</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="mesa : ${mesas}">
+                <td th:text="${mesa.id}"></td>
+                <td th:text="${mesa.numero}"></td>
+                <td th:text="${mesa.status}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/mesa/editar/{id}(id=${mesa.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/mesa/excluir/{id}(id=${mesa.id})}">Excluir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

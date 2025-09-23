@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(title='Pedidos')"></head>
+<body>
+<div class="container">
+    <h2>Pedidos</h2>
+    <a class="btn btn-success mb-3" th:href="@{/pedidos/novo}">Novo Pedido</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Mesa</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="pedido : ${pedidos}">
+                <td th:text="${pedido.id}"></td>
+                <td th:text="${pedido.cliente.nome}"></td>
+                <td th:text="${pedido.mesa.numero}"></td>
+                <td th:text="${pedido.status}"></td>
+                <td th:text="${#dates.format(pedido.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${pedido.total}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/pedidos/editar/{id}(id=${pedido.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/pedidos/excluir/{id}(id=${pedido.id})}">Excluir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

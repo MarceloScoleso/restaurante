@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(title='Mesa')"></head>
+<body>
+<div class="container">
+    <h2 th:text="${mesa.id != null} ? 'Editar Mesa' : 'Nova Mesa'"></h2>
+
+    <form th:action="@{/mesa}" th:object="${mesa}" method="post">
+        <label>Número</label>
+        <input type="number" th:field="*{numero}" required/>
+
+        <label>Status</label>
+        <select th:field="*{status}" required>
+            <option th:each="s : ${status}" th:value="${s}" th:text="${s}"></option>
+        </select>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+    </form>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

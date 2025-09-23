@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(title='Categoria Produto')"></head>
+<body>
+<div class="container">
+    <h2 th:text="${categoria.id != null} ? 'Editar Categoria' : 'Nova Categoria'"></h2>
+
+    <form th:action="@{/categoriaproduto}" th:object="${categoria}" method="post">
+        <label>Nome</label>
+        <input type="text" th:field="*{nome}" required/>
+        <button type="submit" class="btn btn-success">Salvar</button>
+    </form>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
