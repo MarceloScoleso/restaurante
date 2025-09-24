@@ -7,6 +7,7 @@ import com.jmj.restaurante.service.PedidoService;
 import com.jmj.restaurante.service.ProdutoService;
 import com.jmj.restaurante.service.ClienteService;
 import com.jmj.restaurante.service.MesaService;
+import com.jmj.restaurante.service.RestauranteService;
 
 import java.math.BigDecimal;
 
@@ -22,15 +23,18 @@ public class PedidoController {
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final MesaService mesaService;
+    private final RestauranteService restauranteService;
 
     public PedidoController(PedidoService pedidoService,
                             ProdutoService produtoService,
                             ClienteService clienteService,
-                            MesaService mesaService) {
+                            MesaService mesaService,
+                            RestauranteService restauranteService) {
         this.pedidoService = pedidoService;
         this.produtoService = produtoService;
         this.clienteService = clienteService;
         this.mesaService = mesaService;
+        this.restauranteService = restauranteService;
     }
 
     @GetMapping
@@ -46,6 +50,7 @@ public class PedidoController {
         model.addAttribute("produtos", produtoService.listarTodos());
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("mesas", mesaService.listarTodas());
+        model.addAttribute("restaurantes", restauranteService.listarTodos());
         return "pedido/form";
     }
 
@@ -58,54 +63,62 @@ public class PedidoController {
         model.addAttribute("produtos", produtoService.listarTodos());
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("mesas", mesaService.listarTodas());
+        model.addAttribute("restaurantes", restauranteService.listarTodos());
         return "pedido/form";
     }
 
     @PostMapping
-public String salvar(@RequestParam(required = false) Long id,
-                     @RequestParam Long clienteId,
-                     @RequestParam Long mesaId,
-                     @RequestParam PedidoStatus status,
-                     @RequestParam Long produtoId,
-                     @RequestParam Integer quantidade) {
+    public String salvar(@RequestParam(required = false) Long id,
+                         @RequestParam Long clienteId,
+                         @RequestParam Long restauranteId,
+                         @RequestParam Long mesaId,
+                         @RequestParam PedidoStatus status,
+                         @RequestParam Long produtoId,
+                         @RequestParam Integer quantidade) {
 
-    var cliente = clienteService.buscarPorId(clienteId)
-            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-    var mesa = mesaService.buscarPorId(mesaId)
-            .orElseThrow(() -> new RuntimeException("Mesa não encontrada"));
-    var produto = produtoService.buscarPorId(produtoId)
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        var cliente = clienteService.buscarPorId(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-    Pedido pedido;
+        var restaurante = restauranteService.buscarPorId(restauranteId)
+                .orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
 
-    if (id != null) {
-        pedido = pedidoService.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        var mesa = mesaService.buscarPorId(mesaId)
+                .orElseThrow(() -> new RuntimeException("Mesa não encontrada"));
 
-        // limpar itens existentes
-        pedido.getItens().clear(); 
-    } else {
-        pedido = new Pedido();
+        // valida se a mesa pertence ao restaurante selecionado
+        if (!mesa.getRestaurante().getId().equals(restaurante.getId())) {
+            throw new RuntimeException("A mesa selecionada não pertence ao restaurante escolhido");
+        }
+
+        var produto = produtoService.buscarPorId(produtoId)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        Pedido pedido;
+        if (id != null) {
+            pedido = pedidoService.buscarPorId(id)
+                    .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+            pedido.getItens().clear(); // limpa itens existentes
+        } else {
+            pedido = new Pedido();
+        }
+
+        pedido.setCliente(cliente);
+        pedido.setMesa(mesa);
+        pedido.setStatus(status);
+
+        // criar item
+        ItemPedido item = new ItemPedido();
+        item.setProduto(produto);
+        item.setQuantidade(quantidade);
+        item.setSubtotal(produto.getPreco().multiply(BigDecimal.valueOf(quantidade)));
+        item.setPedido(pedido);
+
+        pedido.getItens().add(item);
+
+        pedidoService.salvar(pedido);
+
+        return "redirect:/pedidos";
     }
-
-    pedido.setCliente(cliente);
-    pedido.setMesa(mesa);
-    pedido.setStatus(status);
-
-    // criar item
-    ItemPedido item = new ItemPedido();
-    item.setProduto(produto);
-    item.setQuantidade(quantidade);
-    item.setSubtotal(produto.getPreco().multiply(BigDecimal.valueOf(quantidade)));
-    item.setPedido(pedido);
-
-    // adicionar na mesma lista
-    pedido.getItens().add(item);
-
-    pedidoService.salvar(pedido);
-
-    return "redirect:/pedidos";
-}
 
     @PostMapping("/atualizarStatus/{id}")
     public String atualizarStatus(@PathVariable Long id, @RequestParam PedidoStatus status) {

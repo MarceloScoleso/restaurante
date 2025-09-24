@@ -16,14 +16,14 @@
         <!-- ID do pedido para edição -->
         <input type="hidden" name="id" th:value="${pedido.id}"/>
 
-        <!-- Cliente -->
-        <label>Cliente</label>
-        <select name="clienteId" class="form-select" required>
-            <option value="" disabled>-- Selecione o cliente --</option>
-            <option th:each="cliente : ${clientes}" 
-                    th:value="${cliente.id}" 
-                    th:text="${cliente.nome}" 
-                    th:selected="${pedido.cliente != null and cliente.id == pedido.cliente.id}">
+        <!-- Restaurante -->
+        <label>Restaurante</label>
+        <select id="restauranteSelect" name="restauranteId" class="form-select" required>
+            <option value="" disabled>-- Selecione o restaurante --</option>
+            <option th:each="rest : ${restaurantes}" 
+                    th:value="${rest.id}" 
+                    th:text="${rest.nome}"
+                    th:selected="${pedido.mesa != null and pedido.mesa.restaurante.id == rest.id}">
             </option>
         </select>
 
@@ -34,7 +34,19 @@
             <option th:each="mesa : ${mesas}" 
                     th:value="${mesa.id}" 
                     th:text="${mesa.numero}" 
+                    th:attr="data-restaurante-id=${mesa.restaurante.id}"
                     th:selected="${pedido.mesa != null and mesa.id == pedido.mesa.id}">
+            </option>
+        </select>
+
+        <!-- Cliente -->
+        <label>Cliente</label>
+        <select name="clienteId" class="form-select" required>
+            <option value="" disabled>-- Selecione o cliente --</option>
+            <option th:each="cliente : ${clientes}" 
+                    th:value="${cliente.id}" 
+                    th:text="${cliente.nome}" 
+                    th:selected="${pedido.cliente != null and cliente.id == pedido.cliente.id}">
             </option>
         </select>
 
@@ -82,7 +94,10 @@
 const produtoSelect = document.getElementById('produtoSelect');
 const quantidadeInput = document.getElementById('quantidadeInput');
 const totalInput = document.getElementById('totalInput');
+const restauranteSelect = document.getElementById('restauranteSelect');
+const mesaSelect = document.querySelector('select[name="mesaId"]');
 
+// Atualiza total ao mudar produto ou quantidade
 function atualizarTotal() {
     const selectedOption = produtoSelect.selectedOptions[0];
     const preco = parseFloat(selectedOption?.dataset.preco || 0);
@@ -90,7 +105,15 @@ function atualizarTotal() {
     totalInput.value = (preco * quantidade).toFixed(2);
 }
 
-// Atualiza total ao mudar produto ou quantidade
+// Filtra mesas pelo restaurante selecionado
+restauranteSelect.addEventListener('change', function() {
+    const restauranteId = this.value;
+    Array.from(mesaSelect.options).forEach(option => {
+        option.style.display = option.dataset.restauranteId === restauranteId ? '' : 'none';
+    });
+    mesaSelect.value = ""; // limpa seleção ao trocar de restaurante
+});
+
 produtoSelect.addEventListener('change', atualizarTotal);
 quantidadeInput.addEventListener('input', atualizarTotal);
 
