@@ -6,7 +6,6 @@
 </head>
 <body>
 
-<!-- Header -->
 <div th:replace="fragments/header :: navbar"></div>
 
 <div class="container">
@@ -20,6 +19,7 @@
                 <th>Nome</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Restaurante</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -29,9 +29,12 @@
                 <td th:text="${funcionario.nome}"></td>
                 <td th:text="${funcionario.email}"></td>
                 <td th:text="${funcionario.role}"></td>
+                <td th:text="${funcionario.restaurante.nome}"></td>
                 <td>
-                    <a class="btn btn-primary btn-sm" th:href="@{/funcionario/editar/{id}(id=${funcionario.id})}">Editar</a>
-                    <a class="btn btn-danger btn-sm" th:href="@{/funcionario/excluir/{id}(id=${funcionario.id})}">Excluir</a>
+                    <a class="btn btn-primary btn-sm"
+                       th:href="@{/funcionario/editar/{id}(id=${funcionario.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm"
+                       th:href="@{/funcionario/excluir/{id}(id=${funcionario.id})}">Excluir</a>
                 </td>
             </tr>
         </tbody>
@@ -41,7 +44,6 @@
     </div>
 </div>
 
-<!-- Footer -->
 <div th:replace="fragments/footer :: footer"></div>
 
 </body>
