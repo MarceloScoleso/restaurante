@@ -23,7 +23,7 @@
             <option th:each="cliente : ${clientes}" 
                     th:value="${cliente.id}" 
                     th:text="${cliente.nome}" 
-                    th:selected="${pedido.cliente != null} ? ${cliente.id} == ${pedido.cliente.id} : false">
+                    th:selected="${pedido.cliente != null and cliente.id == pedido.cliente.id}">
             </option>
         </select>
 
@@ -34,7 +34,7 @@
             <option th:each="mesa : ${mesas}" 
                     th:value="${mesa.id}" 
                     th:text="${mesa.numero}" 
-                    th:selected="${pedido.mesa != null} ? ${mesa.id} == ${pedido.mesa.id} : false">
+                    th:selected="${pedido.mesa != null and mesa.id == pedido.mesa.id}">
             </option>
         </select>
 
@@ -44,7 +44,7 @@
             <option th:each="statusOption : ${status}" 
                     th:value="${statusOption}" 
                     th:text="${statusOption}" 
-                    th:selected="${pedido.status} == ${statusOption}">
+                    th:selected="${pedido.status == statusOption}">
             </option>
         </select>
 
@@ -57,17 +57,17 @@
                     th:value="${produto.id}" 
                     th:text="${produto.nome}" 
                     th:attr="data-preco=${produto.preco}" 
-                    th:selected="${pedido.itens[0] != null} ? ${produto.id} == ${pedido.itens[0].produto.id} : false">
+                    th:selected="${not #lists.isEmpty(pedido.itens) and produto.id == pedido.itens[0].produto.id}">
             </option>
         </select>
 
         <label>Quantidade</label>
         <input type="number" id="quantidadeInput" name="quantidade" min="1" class="form-control" required
-               th:value="${pedido.itens[0] != null} ? ${pedido.itens[0].quantidade} : 1"/>
+               th:value="${not #lists.isEmpty(pedido.itens) ? pedido.itens[0].quantidade : 1}"/>
 
         <label>Total</label>
         <input type="text" id="totalInput" name="total" class="form-control" readonly
-               th:value="${pedido.itens[0] != null} ? ${pedido.itens[0].subtotal} : 0.00"/>
+               th:value="${not #lists.isEmpty(pedido.itens) ? pedido.itens[0].subtotal : 0.00}"/>
 
         <br/><br/>
         <button type="submit" class="btn btn-success">Salvar</button>

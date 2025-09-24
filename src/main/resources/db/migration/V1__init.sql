@@ -58,10 +58,11 @@ CREATE TABLE itens_pedido (
     CONSTRAINT fk_item_produto FOREIGN KEY (produto_id) REFERENCES produtos(id)
 );
 
-CREATE TABLE usuarios (
+CREATE TABLE funcionarios (
     id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    role VARCHAR(20) NOT NULL
+    role VARCHAR(20) NOT NULL,
+    restaurante_id BIGINT NOT NULL, 
+    CONSTRAINT fk_funcionario_restaurante FOREIGN KEY (restaurante_id) REFERENCES restaurantes(id) ON DELETE CASCADE  -- Adicionando a chave estrangeira
 );
-
