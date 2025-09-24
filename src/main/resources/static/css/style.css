@@ -10,7 +10,7 @@
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* garante que o body ocupe a tela inteira */
+    min-height: 100vh;
     background: url('/images/background-restaurant.jpg') no-repeat center center fixed;
     background-size: cover;
     color: #333;
@@ -19,7 +19,7 @@ body {
 
 /* Navbar */
 nav {
-    background-color: rgba(255, 87, 34, 0.95); /* laranja mais vibrante */
+    background-color: rgba(255, 87, 34, 0.95);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -44,7 +44,7 @@ nav a:hover {
 
 /* Container geral */
 .container {
-    flex: 1; /* ocupa todo o espaço disponível antes do footer */
+    flex: 1;
     max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
@@ -168,7 +168,7 @@ footer {
     padding: 1.5rem;
     background-color: rgba(255, 87, 34, 0.95);
     color: #fff;
-    margin-top: auto; /* empurra o footer para o fim da página */
+    margin-top: auto;
     box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
 }
 
@@ -218,7 +218,11 @@ footer {
     color: #fff;
 }
 
-/* Botão logout na navbar como link */
+#addItemBtn:hover {
+    background-color: #f4511e;
+}
+
+/* Botão logout na navbar */
 .nav-logout-button {
     background: none;
     border: none;
@@ -226,18 +230,12 @@ footer {
     font-weight: bold;
     cursor: pointer;
     margin-left: 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: color 0.3s;
-    padding: 0; 
+    padding: 0;
 }
 
 .nav-logout-button:hover {
-    color: #ffd700; 
-}
-
-
-#addItemBtn:hover {
-    background-color: #f4511e;
+    color: #ffd700;
 }
 
 /* Separador horizontal */
@@ -245,6 +243,62 @@ footer {
     margin: 1rem 0;
     border: none;
     border-top: 1px solid #ccc;
+}
+
+/* ==================== ERRO ==================== */
+body.error-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/images/background-restaurant.jpg') no-repeat center center fixed;
+    background-size: cover;
+    padding: 2rem;
+}
+
+.error-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 18px;
+    padding: 3rem 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.6s ease-out;
+}
+
+.error-container h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ff7043;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.error-container p.lead {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-container .btn-home {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: #ff7043;
+    color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.error-container .btn-home:hover {
+    background-color: #f4511e;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsividade */
@@ -261,4 +315,6 @@ footer {
     table th, table td { padding: 0.6rem; font-size: 0.9rem; }
     #itensContainer .item input, #itensContainer .item select { font-size: 0.9rem; }
     .btn { font-size: 0.9rem; padding: 0.5rem 1rem; }
+    .error-container h1 { font-size: 2.2rem; }
+    .error-container p.lead { font-size: 1rem; }
 }
