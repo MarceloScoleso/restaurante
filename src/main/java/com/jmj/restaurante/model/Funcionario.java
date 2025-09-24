@@ -2,16 +2,16 @@ package com.jmj.restaurante.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.jmj.restaurante.model.enums.UsuarioRole;
+import com.jmj.restaurante.model.enums.FuncionarioRole;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "funcionarios")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Usuario {
+public class Funcionario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +25,9 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private UsuarioRole role;
+    private FuncionarioRole role;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurante_id", nullable = false)
+    private Restaurante restaurante;
 }

@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/restaurantes")
+@RequestMapping("/restaurante")
 public class RestauranteController {
 
     private final RestauranteService service;
@@ -31,7 +31,7 @@ public class RestauranteController {
     @PostMapping
     public String salvar(@ModelAttribute Restaurante restaurante) {
         service.salvar(restaurante);
-        return "redirect:/restaurantes";
+        return "redirect:/restaurante";
     }
 
     @GetMapping("/editar/{id}")
@@ -43,6 +43,6 @@ public class RestauranteController {
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Long id) {
         service.excluir(id);
-        return "redirect:/restaurantes";
+        return "redirect:/restaurante";
     }
 }

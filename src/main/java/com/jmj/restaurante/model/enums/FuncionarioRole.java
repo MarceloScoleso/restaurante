@@ -1,6 +1,6 @@
 package com.jmj.restaurante.model.enums;
 
-public enum UsuarioRole {
+public enum FuncionarioRole {
     GERENTE,
     GARCOM,
     COZINHA

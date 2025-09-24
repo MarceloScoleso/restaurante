@@ -30,7 +30,16 @@ public class CategoriaProdutoController {
 
     @PostMapping
     public String salvar(@ModelAttribute CategoriaProduto categoria) {
-        service.salvar(categoria);
+        if (categoria.getId() != null) {
+            // Categoria existente, buscar e atualizar
+            CategoriaProduto existente = service.buscarPorId(categoria.getId())
+                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+            existente.setNome(categoria.getNome());
+            service.salvar(existente);
+        } else {
+            // Nova categoria
+            service.salvar(categoria);
+        }
         return "redirect:/categoria";
     }
 

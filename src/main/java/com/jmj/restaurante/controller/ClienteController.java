@@ -30,9 +30,21 @@ public class ClienteController {
 
     @PostMapping
     public String salvar(@ModelAttribute Cliente cliente) {
+    if (cliente.getId() != null) {
+        // Atualiza cliente existente
+        Cliente existente = service.buscarPorId(cliente.getId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        existente.setNome(cliente.getNome());
+        existente.setEmail(cliente.getEmail());
+        existente.setTelefone(cliente.getTelefone());
+        service.salvar(existente);
+    } else {
+        // Cria novo cliente
         service.salvar(cliente);
-        return "redirect:/cliente";
     }
+    return "redirect:/cliente";
+    }
+
 
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Long id, Model model) {

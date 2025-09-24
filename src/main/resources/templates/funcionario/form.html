@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Funcionários</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
+<div class="container">
+    <h2 th:text="${funcionario.id != null} ? 'Editar Funcionário' : 'Novo Funcionário'"></h2>
+
+    <form th:action="@{/funcionario}" th:object="${funcionario}" method="post">
+    <!-- Campo hidden para enviar o ID ao editar -->
+    <input type="hidden" th:field="*{id}"/>
+
+    <label>Nome</label>
+    <input type="text" th:field="*{nome}" required/>
+
+    <label>Email</label>
+    <input type="email" th:field="*{email}" required/>
+
+    <label>Role</label>
+    <select th:field="*{role}">
+        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"></option>
+    </select>
+
+    <label>Restaurante</label>
+    <select name="restauranteId" class="form-select" required>
+        <option value="" disabled>-- Selecione o restaurante --</option>
+        <option th:each="restaurante : ${restaurantes}" 
+            th:value="${restaurante.id}" 
+            th:text="${restaurante.nome}" 
+            th:selected="${funcionario.restaurante != null} ? ${restaurante.id} == ${funcionario.restaurante.id} : false">
+        </option>
+    </select>
+
+
+    <button type="submit" class="btn btn-success">Salvar</button>
+    <a class="btn btn-secondary" th:href="@{/funcionario}">Cancelar</a>
+</form>
+
+</div>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

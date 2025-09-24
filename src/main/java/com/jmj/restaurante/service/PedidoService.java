@@ -4,7 +4,6 @@ import com.jmj.restaurante.model.ItemPedido;
 import com.jmj.restaurante.model.Pedido;
 import com.jmj.restaurante.model.Produto;
 import com.jmj.restaurante.model.enums.PedidoStatus;
-import com.jmj.restaurante.repository.ItemPedidoRepository;
 import com.jmj.restaurante.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +16,9 @@ import java.util.Optional;
 public class PedidoService {
 
     private final PedidoRepository repository;
-    private final ItemPedidoRepository itemPedidoRepository;
 
-    public PedidoService(PedidoRepository repository, ItemPedidoRepository itemPedidoRepository) {
+    public PedidoService(PedidoRepository repository) {
         this.repository = repository;
-        this.itemPedidoRepository = itemPedidoRepository;
     }
 
     public List<Pedido> listarTodos() {
@@ -34,18 +31,23 @@ public class PedidoService {
 
     @Transactional
     public Pedido salvar(Pedido pedido) {
-        // Salva o pedido primeiro para ter o ID
-        Pedido savedPedido = repository.save(pedido);
-
-        // Salva todos os itens associados
+        // Ajusta cada item para referenciar o pedido e calcular subtotal
         if (pedido.getItens() != null) {
             for (ItemPedido item : pedido.getItens()) {
-                item.setPedido(savedPedido);
-                item.setSubtotal(item.getProduto().getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())));
-                itemPedidoRepository.save(item);
+                item.setPedido(pedido);
+
+                BigDecimal preco = item.getProduto().getPreco();
+                if (preco == null) {
+                    throw new RuntimeException(
+                        "O produto '" + item.getProduto().getNome() + "' não possui preço definido."
+                    );
+                }
+
+                item.setSubtotal(preco.multiply(BigDecimal.valueOf(item.getQuantidade())));
             }
         }
-        return savedPedido;
+
+        return repository.save(pedido); // salva pedido e itens juntos
     }
 
     @Transactional
@@ -61,34 +63,37 @@ public class PedidoService {
         Pedido pedido = repository.findById(pedidoId)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
+        BigDecimal preco = produto.getPreco();
+        if (preco == null) {
+            throw new RuntimeException("O produto '" + produto.getNome() + "' não possui preço definido.");
+        }
+
         ItemPedido item = new ItemPedido();
         item.setPedido(pedido);
         item.setProduto(produto);
         item.setQuantidade(quantidade);
-        item.setSubtotal(item.getProduto().getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())));
+        item.setSubtotal(preco.multiply(BigDecimal.valueOf(quantidade)));
 
-        itemPedidoRepository.save(item);
-
-        pedido.getItens().add(item); 
-        return repository.save(pedido);
+        pedido.getItens().add(item);
+        return repository.save(pedido); // salva pedido e itens juntos
     }
 
     @Transactional
-    public void removerItem(Long itemId) {
-        ItemPedido item = itemPedidoRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item do pedido não encontrado"));
-        itemPedidoRepository.delete(item);
+    public void removerItem(Long pedidoId, Long itemId) {
+        Pedido pedido = repository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
+        boolean removed = pedido.getItens().removeIf(item -> item.getId().equals(itemId));
+        if (!removed) {
+            throw new RuntimeException("Item do pedido não encontrado");
+        }
+
+        repository.save(pedido);
     }
 
     public void excluir(Long id) {
         Pedido pedido = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-
-        // Exclui todos os itens associados antes do pedido
-        if (pedido.getItens() != null) {
-            itemPedidoRepository.deleteAll(pedido.getItens());
-        }
-
-        repository.deleteById(id);
+        repository.delete(pedido);
     }
 }

@@ -23,8 +23,11 @@ public class Restaurante {
     @Column(length = 255)
     private String endereco;
 
+    private String telefone;
+
     private Integer capacidade;
 
-    @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Mesa> mesas;
+
 }

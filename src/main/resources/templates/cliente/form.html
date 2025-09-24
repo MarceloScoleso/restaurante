@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: head(title='Cliente')"></head>
+<head>
+    <title>Cliente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
 <div class="container">
     <h2 th:text="${cliente.id != null} ? 'Editar Cliente' : 'Novo Cliente'"></h2>
 
     <form th:action="@{/cliente}" th:object="${cliente}" method="post">
-        <label>Nome</label>
-        <input type="text" th:field="*{nome}" required/>
+    <!-- Campo hidden para enviar o ID ao editar -->
+    <input type="hidden" th:field="*{id}"/>
 
-        <label>Email</label>
-        <input type="email" th:field="*{email}" required/>
+    <label>Nome</label>
+    <input type="text" th:field="*{nome}" required/>
 
-        <label>Telefone</label>
-        <input type="text" th:field="*{telefone}" required/>
+    <label>Email</label>
+    <input type="email" th:field="*{email}" required/>
 
-        <button type="submit" class="btn btn-success">Salvar</button>
-    </form>
+    <label>Telefone</label>
+    <input type="text" th:field="*{telefone}" required/>
+
+    <button type="submit" class="btn btn-success">Salvar</button>
+    <a class="btn btn-secondary" th:href="@{/cliente}">Cancelar</a>
+</form>
+
 </div>
-<footer th:replace="fragments/footer :: footer"></footer>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
 </body>
 </html>

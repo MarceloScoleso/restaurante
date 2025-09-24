@@ -1,7 +1,9 @@
 package com.jmj.restaurante.controller;
 
 import com.jmj.restaurante.model.Mesa;
+import com.jmj.restaurante.model.Restaurante;
 import com.jmj.restaurante.service.MesaService;
+import com.jmj.restaurante.service.RestauranteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 public class MesaController {
 
     private final MesaService service;
+    private final RestauranteService restauranteService;
 
-    public MesaController(MesaService service) {
+    public MesaController(MesaService service, RestauranteService restauranteService) {
         this.service = service;
+        this.restauranteService = restauranteService;
     }
 
     @GetMapping
@@ -25,19 +29,30 @@ public class MesaController {
     @GetMapping("/novo")
     public String novaForm(Model model) {
         model.addAttribute("mesa", new Mesa());
+        model.addAttribute("restaurantes", restauranteService.listarTodos());
         return "mesa/form";
-    }
-
-    @PostMapping
-    public String salvar(@ModelAttribute Mesa mesa) {
-        service.salvar(mesa);
-        return "redirect:/mesa";
     }
 
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Long id, Model model) {
-        model.addAttribute("mesa", service.buscarPorId(id).orElseThrow());
+        Mesa mesa = service.buscarPorId(id).orElseThrow(() -> new RuntimeException("Mesa não encontrada"));
+        model.addAttribute("mesa", mesa);
+        model.addAttribute("restaurantes", restauranteService.listarTodos());
         return "mesa/form";
+    }
+
+    @PostMapping("/salvar")
+    public String salvar(@ModelAttribute Mesa mesa) {
+        // Buscar restaurante pelo ID e associar
+        Restaurante restaurante = restauranteService
+            .buscarPorId(mesa.getRestaurante().getId())
+            .orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
+        mesa.setRestaurante(restaurante);
+
+        // Salva ou atualiza a mesa conforme o ID
+        service.salvar(mesa);
+
+        return "redirect:/mesa";
     }
 
     @GetMapping("/excluir/{id}")

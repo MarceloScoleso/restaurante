@@ -1,129 +1,102 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: head(title='Pedido')"></head>
+<head>
+    <title>Pedido</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
 <div class="container">
     <h2 th:text="${pedido.id != null} ? 'Editar Pedido' : 'Novo Pedido'"></h2>
 
-    <form th:action="@{/pedidos}" th:object="${pedido}" method="post" id="pedidoForm">
+    <form th:action="@{/pedidos}" method="post" id="pedidoForm">
+        <!-- ID do pedido para edição -->
+        <input type="hidden" name="id" th:value="${pedido.id}"/>
+
+        <!-- Cliente -->
         <label>Cliente</label>
-        <select th:field="*{cliente}" required>
-            <option th:each="cliente : ${clientes}" th:value="${cliente}" th:text="${cliente.nome}"></option>
+        <select name="clienteId" class="form-select" required>
+            <option value="" disabled>-- Selecione o cliente --</option>
+            <option th:each="cliente : ${clientes}" 
+                    th:value="${cliente.id}" 
+                    th:text="${cliente.nome}" 
+                    th:selected="${pedido.cliente != null} ? ${cliente.id} == ${pedido.cliente.id} : false">
+            </option>
         </select>
 
+        <!-- Mesa -->
         <label>Mesa</label>
-        <select th:field="*{mesa}" required>
-            <option th:each="mesa : ${mesas}" th:value="${mesa}" th:text="${mesa.numero}"></option>
+        <select name="mesaId" class="form-select" required>
+            <option value="" disabled>-- Selecione a mesa --</option>
+            <option th:each="mesa : ${mesas}" 
+                    th:value="${mesa.id}" 
+                    th:text="${mesa.numero}" 
+                    th:selected="${pedido.mesa != null} ? ${mesa.id} == ${pedido.mesa.id} : false">
+            </option>
         </select>
 
+        <!-- Status -->
         <label>Status</label>
-        <select th:field="*{status}">
-            <option th:each="status : ${status}" th:value="${status}" th:text="${status}"></option>
+        <select name="status" class="form-select">
+            <option th:each="statusOption : ${status}" 
+                    th:value="${statusOption}" 
+                    th:text="${statusOption}" 
+                    th:selected="${pedido.status} == ${statusOption}">
+            </option>
         </select>
 
-        <!-- Itens do pedido -->
-        <h4>Itens do Pedido</h4>
-        <div id="itensContainer">
-            <div class="item" th:each="item, iterStat : *{itens}">
-                <label>Produto</label>
-                <select th:field="*{itens[__${iterStat.index}__].produto}">
-                    <option th:each="produto : ${produtos}" th:value="${produto}" th:text="${produto.nome}"></option>
-                </select>
+        <!-- Itens do Pedido -->
+        <h4>Item do Pedido</h4>
+        <label>Produto</label>
+        <select id="produtoSelect" name="produtoId" class="form-select" required>
+            <option value="" disabled>-- Selecione o produto --</option>
+            <option th:each="produto : ${produtos}" 
+                    th:value="${produto.id}" 
+                    th:text="${produto.nome}" 
+                    th:attr="data-preco=${produto.preco}" 
+                    th:selected="${pedido.itens[0] != null} ? ${produto.id} == ${pedido.itens[0].produto.id} : false">
+            </option>
+        </select>
 
-                <label>Quantidade</label>
-                <input type="number" th:field="*{itens[__${iterStat.index}__].quantidade}" min="1"/>
+        <label>Quantidade</label>
+        <input type="number" id="quantidadeInput" name="quantidade" min="1" class="form-control" required
+               th:value="${pedido.itens[0] != null} ? ${pedido.itens[0].quantidade} : 1"/>
 
-                <button type="button" class="btn btn-danger removeBtn">Remover</button>
-                <hr/>
-            </div>
-        </div>
+        <label>Total</label>
+        <input type="text" id="totalInput" name="total" class="form-control" readonly
+               th:value="${pedido.itens[0] != null} ? ${pedido.itens[0].subtotal} : 0.00"/>
 
-        <button type="button" class="btn btn-secondary" id="addItemBtn">Adicionar Item</button>
         <br/><br/>
         <button type="submit" class="btn btn-success">Salvar</button>
+        <a class="btn btn-secondary" th:href="@{/pedidos}">Cancelar</a>
     </form>
 </div>
 
-<footer th:replace="fragments/footer :: footer"></footer>
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
 
 <script>
-    const produtos = /*[[${produtos}]]*/ []; // Thymeleaf vai preencher os produtos
-    const itensContainer = document.getElementById('itensContainer');
-    const addItemBtn = document.getElementById('addItemBtn');
+const produtoSelect = document.getElementById('produtoSelect');
+const quantidadeInput = document.getElementById('quantidadeInput');
+const totalInput = document.getElementById('totalInput');
 
-    function createItem(index) {
-        const div = document.createElement('div');
-        div.classList.add('item');
+function atualizarTotal() {
+    const selectedOption = produtoSelect.selectedOptions[0];
+    const preco = parseFloat(selectedOption?.dataset.preco || 0);
+    const quantidade = parseInt(quantidadeInput.value) || 0;
+    totalInput.value = (preco * quantidade).toFixed(2);
+}
 
-        // Produto select
-        const labelProduto = document.createElement('label');
-        labelProduto.innerText = 'Produto';
-        div.appendChild(labelProduto);
+// Atualiza total ao mudar produto ou quantidade
+produtoSelect.addEventListener('change', atualizarTotal);
+quantidadeInput.addEventListener('input', atualizarTotal);
 
-        const selectProduto = document.createElement('select');
-        selectProduto.name = `itens[${index}].produto.id`;
-        selectProduto.classList.add('form-select');
-        produtos.forEach(prod => {
-            const option = document.createElement('option');
-            option.value = prod.id;
-            option.text = prod.nome;
-            selectProduto.appendChild(option);
-        });
-        div.appendChild(selectProduto);
-
-        // Quantidade
-        const labelQtd = document.createElement('label');
-        labelQtd.innerText = 'Quantidade';
-        div.appendChild(labelQtd);
-
-        const inputQtd = document.createElement('input');
-        inputQtd.type = 'number';
-        inputQtd.name = `itens[${index}].quantidade`;
-        inputQtd.min = 1;
-        inputQtd.value = 1;
-        inputQtd.classList.add('form-control');
-        div.appendChild(inputQtd);
-
-        // Remover button
-        const btnRemove = document.createElement('button');
-        btnRemove.type = 'button';
-        btnRemove.classList.add('btn', 'btn-danger', 'removeBtn', 'mt-1');
-        btnRemove.innerText = 'Remover';
-        btnRemove.addEventListener('click', () => {
-            div.remove();
-            updateIndices();
-        });
-        div.appendChild(btnRemove);
-
-        // Separator
-        div.appendChild(document.createElement('hr'));
-
-        return div;
-    }
-
-    function updateIndices() {
-        const items = document.querySelectorAll('#itensContainer .item');
-        items.forEach((div, index) => {
-            const select = div.querySelector('select');
-            const input = div.querySelector('input');
-            select.name = `itens[${index}].produto.id`;
-            input.name = `itens[${index}].quantidade`;
-        });
-    }
-
-    addItemBtn.addEventListener('click', () => {
-        const index = document.querySelectorAll('#itensContainer .item').length;
-        const newItem = createItem(index);
-        itensContainer.appendChild(newItem);
-    });
-
-    // Remover items existentes
-    document.querySelectorAll('.removeBtn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.target.closest('.item').remove();
-            updateIndices();
-        });
-    });
+// Calcula total ao carregar a página (no caso de edição)
+window.addEventListener('load', atualizarTotal);
 </script>
+
 </body>
 </html>

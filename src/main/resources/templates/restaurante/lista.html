@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Restaurantes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
+<div class="container">
+    <h2>Restaurantes</h2>
+    <a class="btn btn-success mb-3" th:href="@{/restaurante/novo}">Novo Restaurante</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Endereço</th>
+                <th>Telefone</th>
+                <th>Capacidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="rest : ${restaurantes}">
+                <td th:text="${rest.id}"></td>
+                <td th:text="${rest.nome}"></td>
+                <td th:text="${rest.endereco}"></td>
+                <td th:text="${rest.telefone}"></td>
+                <td th:text="${rest.capacidade}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/restaurante/editar/{id}(id=${rest.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/restaurante/excluir/{id}(id=${rest.id})}">Excluir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="mb-3">
+        <div th:replace="fragments/buttons :: btn-voltar"></div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

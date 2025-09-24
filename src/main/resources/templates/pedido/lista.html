@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: head(title='Pedidos')"></head>
+<head>
+    <title>Pedidos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
 <div class="container">
     <h2>Pedidos</h2>
     <a class="btn btn-success mb-3" th:href="@{/pedidos/novo}">Novo Pedido</a>
@@ -14,6 +21,7 @@
                 <th>Mesa</th>
                 <th>Status</th>
                 <th>Data</th>
+                <th>Produtos</th>
                 <th>Total</th>
                 <th>Ações</th>
             </tr>
@@ -24,8 +32,13 @@
                 <td th:text="${pedido.cliente.nome}"></td>
                 <td th:text="${pedido.mesa.numero}"></td>
                 <td th:text="${pedido.status}"></td>
-                <td th:text="${#dates.format(pedido.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="${pedido.total}"></td>
+                <td th:text="${#temporals.format(pedido.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+                <td>
+                    <ul>
+                        <li th:each="item : ${pedido.itens}" th:text="${item.produto.nome + ' x ' + item.quantidade}"></li>
+                    </ul>
+                </td>
+                <td th:text="${pedido.total} != null ? ${pedido.total} : 0"></td>
                 <td>
                     <a class="btn btn-primary btn-sm" th:href="@{/pedidos/editar/{id}(id=${pedido.id})}">Editar</a>
                     <a class="btn btn-danger btn-sm" th:href="@{/pedidos/excluir/{id}(id=${pedido.id})}">Excluir</a>
@@ -33,7 +46,13 @@
             </tr>
         </tbody>
     </table>
+    <div class="mb-3">
+        <div th:replace="fragments/buttons :: btn-voltar"></div>
+    </div>
 </div>
-<footer th:replace="fragments/footer :: footer"></footer>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
 </body>
 </html>

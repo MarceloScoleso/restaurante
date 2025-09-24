@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: head(title='Produtos')"></head>
+<head>
+    <title>Produtos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
 <div class="container">
     <h2>Produtos</h2>
     <a class="btn btn-success mb-3" th:href="@{/produto/novo}">Novo Produto</a>
@@ -29,7 +36,13 @@
             </tr>
         </tbody>
     </table>
+    <div class="mb-3">
+        <div th:replace="fragments/buttons :: btn-voltar"></div>
+    </div>
 </div>
-<footer th:replace="fragments/footer :: footer"></footer>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
 </body>
 </html>

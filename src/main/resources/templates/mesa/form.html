@@ -1,22 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: head(title='Mesa')"></head>
+<head>
+    <title>Mesa</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
 <div class="container">
     <h2 th:text="${mesa.id != null} ? 'Editar Mesa' : 'Nova Mesa'"></h2>
 
-    <form th:action="@{/mesa}" th:object="${mesa}" method="post">
-        <label>Número</label>
-        <input type="number" th:field="*{numero}" required/>
+    <form th:action="@{/mesa/salvar}" th:object="${mesa}" method="post">
+        <input type="hidden" th:field="*{id}"/> <!-- Mantém o ID da mesa -->
 
-        <label>Status</label>
-        <select th:field="*{status}" required>
-            <option th:each="s : ${status}" th:value="${s}" th:text="${s}"></option>
-        </select>
+        <div class="mb-3">
+            <label class="form-label">Número</label>
+            <input type="number" class="form-control" th:field="*{numero}" required/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Disponível</label>
+            <select class="form-select" th:field="*{disponivel}" required>
+                <option th:value="true">Sim</option>
+                <option th:value="false">Não</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Restaurante</label>
+            <select class="form-select" th:field="*{restaurante.id}" required>
+                <option th:each="r : ${restaurantes}" th:value="${r.id}" th:text="${r.nome}" 
+                    th:selected="${mesa.restaurante != null} ? ${r.id} == ${mesa.restaurante.id} : false"></option>
+            </select>
+        </div>
 
         <button type="submit" class="btn btn-success">Salvar</button>
+        <a class="btn btn-secondary" th:href="@{/mesa}">Cancelar</a>
     </form>
 </div>
-<footer th:replace="fragments/footer :: footer"></footer>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
 </body>
 </html>

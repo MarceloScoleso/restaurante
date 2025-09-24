@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Clientes</title>
+    <title>Categorias de Produto</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -10,28 +10,24 @@
 <div th:replace="fragments/header :: navbar"></div>
 
 <div class="container">
-    <h2>Clientes</h2>
-    <a class="btn btn-success mb-3" th:href="@{/cliente/novo}">Novo Cliente</a>
+    <h2>Categorias de Produto</h2>
+    <a class="btn btn-success mb-3" th:href="@{/categoria/novo}">Nova Categoria</a>
 
     <table>
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Email</th>
-                <th>Telefone</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="cliente : ${clientes}">
-                <td th:text="${cliente.id}"></td>
-                <td th:text="${cliente.nome}"></td>
-                <td th:text="${cliente.email}"></td>
-                <td th:text="${cliente.telefone}"></td>
+            <tr th:each="cat : ${categorias}">
+                <td th:text="${cat.id}"></td>
+                <td th:text="${cat.nome}"></td>
                 <td>
-                    <a class="btn btn-primary btn-sm" th:href="@{/cliente/editar/{id}(id=${cliente.id})}">Editar</a>
-                    <a class="btn btn-danger btn-sm" th:href="@{/cliente/excluir/{id}(id=${cliente.id})}">Excluir</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/categoria/editar/{id}(id=${cat.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/categoria/excluir/{id}(id=${cat.id})}">Excluir</a>
                 </td>
             </tr>
         </tbody>

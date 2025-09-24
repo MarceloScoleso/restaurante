@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Restaurante</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: navbar"></div>
+
+<div class="container">
+    <h2 th:text="${restaurante.id != null} ? 'Editar Restaurante' : 'Novo Restaurante'"></h2>
+
+    <form th:action="@{/restaurante}" th:object="${restaurante}" method="post">
+        <!-- Campo oculto para manter o ID ao editar -->
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" th:field="*{nome}" required/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Endereço</label>
+            <input type="text" class="form-control" th:field="*{endereco}" required/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <input type="text" class="form-control" th:field="*{telefone}" required/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Capacidade</label>
+            <input type="number" class="form-control" th:field="*{capacidade}" required/>
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a class="btn btn-secondary" th:href="@{/restaurante}">Cancelar</a>
+    </form>
+</div>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

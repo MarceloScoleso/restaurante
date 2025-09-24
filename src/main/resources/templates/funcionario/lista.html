@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Clientes</title>
+    <title>Funcionários</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -10,8 +10,8 @@
 <div th:replace="fragments/header :: navbar"></div>
 
 <div class="container">
-    <h2>Clientes</h2>
-    <a class="btn btn-success mb-3" th:href="@{/cliente/novo}">Novo Cliente</a>
+    <h2>Funcionários</h2>
+    <a class="btn btn-success mb-3" th:href="@{/funcionario/novo}">Novo Funcionário</a>
 
     <table>
         <thead>
@@ -19,19 +19,19 @@
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Email</th>
-                <th>Telefone</th>
+                <th>Role</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="cliente : ${clientes}">
-                <td th:text="${cliente.id}"></td>
-                <td th:text="${cliente.nome}"></td>
-                <td th:text="${cliente.email}"></td>
-                <td th:text="${cliente.telefone}"></td>
+            <tr th:each="funcionario : ${funcionarios}">
+                <td th:text="${funcionario.id}"></td>
+                <td th:text="${funcionario.nome}"></td>
+                <td th:text="${funcionario.email}"></td>
+                <td th:text="${funcionario.role}"></td>
                 <td>
-                    <a class="btn btn-primary btn-sm" th:href="@{/cliente/editar/{id}(id=${cliente.id})}">Editar</a>
-                    <a class="btn btn-danger btn-sm" th:href="@{/cliente/excluir/{id}(id=${cliente.id})}">Excluir</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/funcionario/editar/{id}(id=${funcionario.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/funcionario/excluir/{id}(id=${funcionario.id})}">Excluir</a>
                 </td>
             </tr>
         </tbody>
